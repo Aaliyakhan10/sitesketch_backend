@@ -2,15 +2,14 @@ package com.doftec.sitesketch.controller
 
 import com.doftec.sitesketch.model.Resume
 import com.doftec.sitesketch.service.Aiservice
-import org.springframework.http.RequestEntity
+import com.doftec.sitesketch.service.DatabaseService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.*
+
 @RestController
-class Aicontroller(private val aiservice: Aiservice) {
+@RequestMapping("/user")
+class Aicontroller(private val aiservice: Aiservice,private val databaseService: DatabaseService) {
 
     @PostMapping("/ai-code")
     fun callAi(@RequestBody resume: Resume): ResponseEntity<String> {
@@ -19,7 +18,21 @@ class Aicontroller(private val aiservice: Aiservice) {
     }
     @PostMapping("/resume-update")
     fun Update(@RequestBody resume: Resume): ResponseEntity<String> {
+        val email=databaseService.getCurrentUserEmail()
+        if(email?.isNotEmpty() == true ) {
+             databaseService.addResume(resume, email)
 
-        return ResponseEntity.ok(aiservice.callAi(resume))
+            return ResponseEntity.ok("Save to database")
+        }
+        return  ResponseEntity.ok("Error")
+    }
+    @GetMapping("/whoami")
+    fun whoAmI(): Map<String, Any> {
+        val auth = SecurityContextHolder.getContext().authentication
+        return mapOf(
+            "name" to auth.name,
+            "authenticated" to auth.isAuthenticated,
+            "authorities" to auth.authorities.map { it.authority }
+        )
     }
 }
