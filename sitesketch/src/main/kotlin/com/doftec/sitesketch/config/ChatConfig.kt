@@ -1,21 +1,12 @@
 package com.doftec.sitesketch.config
 
-import org.springframework.ai.chat.client.ChatClient
-import org.springframework.ai.chat.model.ChatModel
-import org.springframework.ai.model.ApiKey
-import org.springframework.ai.openai.api.OpenAiApi
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
-import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestClient
-
-
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class ChatConfig {

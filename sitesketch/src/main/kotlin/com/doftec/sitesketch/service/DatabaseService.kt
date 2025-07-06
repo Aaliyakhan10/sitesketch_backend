@@ -7,14 +7,25 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 
-class DatabaseService(private val userRepository: UserRepository, private val passwordEncoder: PasswordEncoder,) {
-    fun addUser(user: User): User {
-        val hashedPassword = passwordEncoder.encode(user.password)
-        user.password=hashedPassword
-        return userRepository.save(user)
+class DatabaseService(private val userRepository: UserRepository, private val passwordEncoder: PasswordEncoder,private val emailService: EmailService) {
+    fun addUser(user: User): String {
+        val token = UUID.randomUUID().toString()
+        val user = User(
+            email = user.email,
+            password = passwordEncoder.encode(user.password),
+            verificationToken = token,
+            tokenExpiration = LocalDateTime.now().plusHours(24)
+        )
+
+
+        emailService.sendVerificationEmail(user.email, token)
+        userRepository.save(user)
+        return "User Register Successfully Now Login"
     }
 
 

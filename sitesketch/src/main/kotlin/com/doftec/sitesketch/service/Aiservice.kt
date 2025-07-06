@@ -17,7 +17,7 @@ class Aiservice(private val restClient: RestClient) {
         val codePrompt = getPrompt(resumeJson)
 
             val requestBody = mapOf(
-            "model" to "deepseek/deepseek-chat-v3-0324:free",
+            "model" to "deepseek/deepseek-r1-0528-qwen3-8b:free",
             "messages" to listOf(
                 mapOf("role" to "user", "content" to codePrompt)
             ),
@@ -43,7 +43,7 @@ class Aiservice(private val restClient: RestClient) {
     fun getPrompt(resumeJson: String): String{
         return """
 You are an expert frontend developer and UI/UX designer. Create a modern, production-ready, single-page portfolio website that dynamically renders all content from a local resume.json file.
-You are an expert frontend developer and creative UI/UX designer.
+
 
 Your task is to generate a fully functional, production-ready, single-page portfolio website that dynamically renders content based on a local JSON file.
 
@@ -109,9 +109,11 @@ No build step required (pure HTML + JS + CDN).
 Dynamic Navigation:
 
 Only show links for visible, data-backed sections.
+Remember to make layout user friendly like when a nav link click it go to that section ,but the heading of the section get hide behind nav bar keep the margin accordingly.
+
 
 New sections added to JSON should appear automatically in both content and nav.
-
+The site must never render empty sections or fields visibly, but the code must always support them so updating the JSON automatically updates the UI.
 Safe Rendering:
 
 Do not attempt to render empty/missing sections.
@@ -136,7 +138,7 @@ hero → summary → skills → experience → projects → education → certif
 
 Contact (Always)
 
-⚠️ Even if a section is empty, its HTML and JS must still exist in the codebase (so it can render if JSON is updated later). But do not render or display the section or nav item if it has no data.
+⚠️ Even if a section/field/value is empty, its HTML and JS must still exist in the codebase (so it can render if JSON is updated later). But do not render or display the section or nav item if it has no data.
 
 📬 Contact Form
 Fields: Name (required), Email (required), Subject, Message (required)
@@ -227,7 +229,8 @@ Smooth animations with minimal layout shift (CLS)
 Efficient rendering and event delegation
 
 📝 Output Requirements
-One clean, complete HTML5 file
+One clean, complete HTML5 file including cdn,css and javascript 
+
 
 Includes:
 
@@ -263,7 +266,7 @@ Sky blue or cartoonish color schemes
 User needing to touch or modify the code
 
 📁 Summary:
-The result should be a fully responsive, glassmorphic single-page portfolio that loads dynamically from resume.json, with no setup, edits, or configuration required by the user. Just drop the HTML and JSON into the same folder, and it works.""".trimIndent()
+The result should be a fully responsive, glassmorphic single-page portfolio that loads dynamically from resume.json, with no setup, edits, or configuration required by the user. Just return full code html ,styling and javascript inside the html tag dont leave any implementataion half prove fully function ready to deploy code and return code without any comments or thinking , and it works.""".trimIndent()
 
     }
 }
