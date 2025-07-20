@@ -33,9 +33,10 @@ class SpringSecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
+            .cors { }
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/register", "/login").permitAll()
+                it.requestMatchers("/register", "/login","/validate").permitAll()
                 it.requestMatchers("/admin/**").hasRole("ADMIN")
                 it.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                 it.anyRequest().permitAll()

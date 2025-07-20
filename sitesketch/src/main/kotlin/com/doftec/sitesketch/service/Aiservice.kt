@@ -42,32 +42,25 @@ class Aiservice(private val restClient: RestClient) {
     }
     fun getPrompt(resumeJson: String): String{
         return """
-You are an expert frontend developer and UI/UX designer. Create a modern, production-ready, single-page portfolio website that dynamically renders all content from a local resume.json file.
+You are an expert frontend developer and UI/UX designer.
 
+Your task is to generate a fully functional, production-ready, single-page portfolio website that dynamically renders content from a local `resume.json` file.
 
-Your task is to generate a fully functional, production-ready, single-page portfolio website that dynamically renders content based on a local JSON file.
+🧾 Technologies:
+• HTML5  
+• Plain CSS (no frameworks)  
+• Vanilla JavaScript  
+• No external JS or CSS files — everything must be in one HTML file  
+• Icons via CDN only (FontAwesome Free, Heroicons, or Iconify)
+• Css shouls be correctly style
 
-🚀 Objective:
-Build a beautiful, modern, mobile-first, fully responsive, single-page portfolio using:
-
-HTML
-
-Tailwind CSS (via CDN)
-
-Vanilla JavaScript (no frameworks)
-
-All content must be rendered dynamically from a local resume.json file (same directory).
-The data provide by user is 
- 🔽 Resume JSON:
-        $resumeJson
-        Use this data to know about profession and style the web page accordingly.
 
 📁 Data Source:
-Fetch data from ./resume.json. The schema is:
+All content must be fetched dynamically from `./resume.json`. Do not hardcode any content.
 
-json
-Copy
-Edit
+Schema includes (but not limited to):
+
+```json
 {
   "personalInformation": {
     "fullName": "", "email": "", "phoneNumber": "", "location": "", "linkedIn": "", "gitHub": "", "portfolio": "", "website": "", "media": ""
@@ -82,191 +75,108 @@ Edit
   "publications": [{ "title": "", "publisher": "", "publicationDate": "", "url": "" }],
   "caseStudies": [{ "title": "", "client": "", "description": "", "outcome": "", "media": "" }],
   "licenses": [{ "title": "", "licenseNumber": "", "issuingOrganization": "", "issueDate": "", "expiryDate": "" }],
-  "languages": [{ "id": null, "name": "", "proficiency": "" }],
-  "interests": [{ "id": null, "name": "" }],
+  "languages": [{ "name": "", "proficiency": "" }],
+  "interests": [{ "name": "" }],
   "references": [{ "name": "", "position": "", "company": "", "email": "", "phone": "" }],
   "mediaGallery": [{ "fileName": "", "fileType": "", "description": "", "url": "" }]
 }
-🚀 Core Objectives
-100% Dynamic: All content must be fetched and rendered from ./resume.json. No hardcoded values allowed.
-Understand the json structure provided and generate a condition based visibility of each section present in structure
-
-Auto-Adaptive: The site should automatically reflect changes or additions to the JSON without requiring any code edits.
-
-Deployment-Ready: The output must be a single, complete HTML file. The user should only need to drop this HTML file and the JSON into the same folder — nothing else.
-
-Zero User Edits: Do not assume the user will modify or configure any code. Everything must work immediately and independently.
-
-📦 Technical Specifications
-Single HTML file only — no external JS/CSS files.
-
-Tailwind CSS v3.3 via CDN.
-
-Vanilla JavaScript for all logic and rendering.
-
-No build step required (pure HTML + JS + CDN).
-
-Dynamic Navigation:
-
-Only show links for visible, data-backed sections.
-Remember to make layout user friendly like when a nav link click it go to that section ,but the heading of the section get hide behind nav bar keep the margin accordingly.
-
-
-New sections added to JSON should appear automatically in both content and nav.
-The site must never render empty sections or fields visibly, but the code must always support them so updating the JSON automatically updates the UI.
-Safe Rendering:
-
-Do not attempt to render empty/missing sections.
-
-Use optional chaining, safe DOM manipulation, and robust JSON validation.
-Zero User Edits: Do not assume the user will modify or configure any code. Everything must work immediately and independently.
-
-Fully Mobile Responsive: The layout, navigation, and content must be optimized for all screen sizes, including phones and tablets.
-
-Hamburger Menu on Mobile: On smaller screens, display a hamburger menu that toggles the navigation.
-Adjust the layout according to device size
-Add only and only 7 section in navigation not more than that put about,contact,work experience ,project , achievements,education  and skills only ,no other then this if this is not empty if empty then add according to need or profession .
-Code should not throw any error please check this.
-🧩 Dynamic Sections (Render only if data exists)
-Render each section only if data is present in resume.json. Always render contact.
-
-Render sections in this order:
-
-Hero (Name, Title, Socials)
-hero → summary → skills → experience → projects → education → certifications → achievements → publications → caseStudies → licenses → languages → interests → mediaGallery → references → contact
-
-
-Contact (Always)
-
-⚠️ Even if a section/field/value is empty, its HTML and JS must still exist in the codebase (so it can render if JSON is updated later). But do not render or display the section or nav item if it has no data.
-
-📬 Contact Form
-Fields: Name (required), Email (required), Subject, Message (required)
-
-Use mailto: handler with pre-filled data
-
-Show a success toast on submission (auto-dismiss)
-
-Disable button while sending
-
-🎨 Design Specifications
-Visual Theme: Clean, modern, icy aesthetic
-
-Color Palette:
-
-Primary: According to you
-
-Secondary:According to you
-
-
-Accent: According to you
-
-
-Background: According to you
-Add Glass effect 
-icy/glassmorphism theme
-
-Effects:
-
-Frosted glass cards with subtle shadows
-
-Animated fade-in / slide-up elements
-
-Hover effects with depth or scaling
-
-Smooth scrolling and nav animations
-3d effect
-
-Typography:
-
-Consistent font sizing, spacing, and alignment
-
-Clear mobile-first layout and responsiveness
-
-✅ ICON REQUIREMENTS:
-• **All icons must come from a reliable free icon CDN or service like [Heroicons](https://heroicons.com), [Font Awesome Free](https://fontawesome.com/icons?d=free), or [Iconify](https://iconify.design).**
-• Do **NOT** use AI-generated icons, base64-embedded icons, or broken SVG links.
-• Ensure all icons load properly on first page load without requiring any local setup.
-• Use appropriate icons for navigation, skills, contact form, sections, etc.
-
-Navigation:
-
-Sticky top nav/stick to left side of screen (top or left-side)
-
-Auto-hiding on scroll
-
-Mobile hamburger menu with Tailwind 
-
-✅ Functional Requirements
-Fully Dynamic Navigation
-
-Only shows sections that exist in the JSON
-
-Automatically adapts to added/removed sections
-Automatically add/remove nav link if section is present first and json updated and section is empty it should not be present in nav and only five 6 link in nav all section link is horrible
-Add navigation link based on condition
-
-Auto-rendered Content
-
-All content must come from resume.json
-
-No user code changes required for updates
-
-Robust Error Handling
-
-Validate JSON structure before rendering
-
-Fallback UI for missing/invalid data
-
-Avoid "Cannot set properties of null" and similar errors
-
-Performance Optimizations
-
-Lazy loading images and videos
-
-Smooth animations with minimal layout shift (CLS)
-
-Efficient rendering and event delegation
-
-📝 Output Requirements
-One clean, complete HTML5 file including cdn,css and javascript 
-
-
-Includes:
-
-Tailwind CDN
-
-Heroicons CDN
-
-All rendering and logic in inline JavaScript
-
-Must begin with <!DOCTYPE html>
-
-No:
-
-Comments
-
-Placeholder values
-
-Hardcoded resume content
-
-Frameworks (React, Vue, etc.)
-
-External scripts or stylesheets
-
-🛑 Forbidden
-Hardcoded resume data
-
-Empty sections rendered visually
-
-External JS or CSS files
-
-Sky blue or cartoonish color schemes
-
-User needing to touch or modify the code
+🧩 Render Logic:
+Render the following sections only if the data is present:
+
+Order:
+Hero → Summary → Skills → Experience → Projects → Education → Certifications → Achievements → Publications → Case Studies → Licenses → Languages → Interests → Media Gallery → References → Contact
+✅ If not rendering the data , the heading must not render 
+    e.g if projects section is empty its title should not be visible at all.
+✅please do not render heading if data is not present or section is empty like i can see a heading as license with no information below it heading will only render if that section is rendering
+✅ Always render "Contact", even if the others are empty.
+✅ All other sections must be hidden if there's no data.
+✅ Still include the JS & HTML structure in the code so that if resume.json updates later, it auto-renders correctly.
+
+
+🧭 Navigation:
+• Show links for up to 6 sections only (if they have data):
+About, Work Experience, Projects, Skills, Education, Contact
+• It must be user friendly , responsive , clear and beautifully
+• Navigation must be sticky, mobile-friendly, and smooth scrolling.
+• Use a hamburger menu on smaller screens.
+• Section headers must be visible after clicking nav (consider nav offset).
+
+📬 Contact Form:
+• Fields: Name (required), Email (required), Subject, Message (required)
+• Use mailto: with pre-filled fields
+• Show toast on success (auto-dismiss after 3 sec)
+• Disable send button while sending
+
+🎨 Design Theme:
+• Clean, icy glassmorphism aesthetic
+• Use dark,= and visible for text and light color in background
+• Frosted glass cards with subtle shadows
+• Smooth fade-in and slide-up animations
+• Hover scale/depth effects
+• Cool modern font and consistent typography
+• Responsive layout (desktop, tablet, mobile)
+• Lazy-load media
+• Apply css correctly 
+• Do not forget to fully implement responsiveness 
+
+
+✅ Example Rendering Structure:
+Use this structure for each render function inside the .then(data => { ... }) block:
+
+javascript
+Copy
+Edit
+fetch("./resume.json").then(res => res.json()).then(data => {
+    if (data.summary) renderSummary(data.personalInformation, data.summary);
+    if (data.skills?.length) renderSkills(data.skills);
+    if (data.experience?.length) renderExperience(data.experience);
+    if (data.projects?.length) renderProjects(data.projects);
+    if (data.education?.length) renderEducation(data.education);
+    if (data.certifications?.length) renderCertifications(data.certifications);
+    if (data.languages?.length) renderLanguages(data.languages);
+    if (data.achievements?.length) renderAchievements(data.achievements);
+    if (data.caseStudies?.length) renderCaseStudies(data.caseStudies);
+    if (data.mediaGallery?.length) renderMediaGallery(data.mediaGallery);
+    if (data.references?.length) renderReferences(data.references);
+    if (data.interests?.length) renderInterests(data.interests);
+    renderContact(); // Always
+});
+Each section like renderSummary(...) must create and inject content only if the corresponding data is present. Structure for all sections must still exist in the code (so they appear when updated in JSON).
+
+📦 Performance:
+• Safe DOM access with optional chaining
+• No hardcoded values
+• No undefined/null errors in console
+• Lazy load images and media
+• Minimize layout shift
+
+📝 Deliverable:
+Generate one full HTML file (no external assets), which:
+• Uses only inline CSS + JS
+• Starts with <!DOCTYPE html>
+• Includes all render logic
+• Uses icon CDN (FontAwesome Free, Iconify, or Heroicons only)
+• Fully working and ready to deploy
+• No comments or placeholder content
+• No need for the user to edit any code ever
 
 📁 Summary:
-The result should be a fully responsive, glassmorphic single-page portfolio that loads dynamically from resume.json, with no setup, edits, or configuration required by the user. Just return full code html ,styling and javascript inside the html tag dont leave any implementataion half prove fully function ready to deploy code and return code without any comments or thinking , and it works.""".trimIndent()
+Return only a complete, working HTML5 code file that:
+• Dynamically loads resume.json
+• Renders only non-empty sections
+• Auto-updates when JSON is updated
+• Contains exactly 6 or fewer nav links
+• Is mobile-first, animated, responsive, glass-themed
+• Css must apply in code 
+• Ready to deploy 
+• Please check your response twice before returning
+• Needs no setup, build step, or modification
+
+Please generate code that correctly renders all sections dynamically from the JSON file and allows smooth navigation between them.
+
+
+Now return only the code.
+""".trimIndent()
 
     }
 }

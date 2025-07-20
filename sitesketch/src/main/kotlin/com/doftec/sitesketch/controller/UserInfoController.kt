@@ -36,7 +36,7 @@ class UserInfoController(private val userRepository: UserRepository,
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully")
     }
     @PostMapping("/login")
-    fun login(@RequestBody authRequest: User): ResponseEntity<AuthResponse> {
+    fun login(@RequestBody authRequest: User): ResponseEntity<String> {
         println("Login attempt: ${authRequest.email}")
         return  try {
 
@@ -46,7 +46,7 @@ class UserInfoController(private val userRepository: UserRepository,
             val user = userRepository.findByEmail(authRequest.email)
                 ?: return ResponseEntity.status(401).build()
             val token = jwtUtil.generateToken(authRequest.email,user.roles)
-            ResponseEntity.ok(AuthResponse(token))
+            ResponseEntity.ok(token)
         } catch (e: AuthenticationException) {
             println("Authentication failed: ${e.message}")
             ResponseEntity.status(401).build()
@@ -67,5 +67,12 @@ class UserInfoController(private val userRepository: UserRepository,
         userRepository.save(user)
 
         return ResponseEntity.ok("Email verified! You can now log in.")
+    }
+    @PostMapping("/validate")
+    fun validateJwt(@RequestBody token: String): ResponseEntity<Boolean>{
+        if(jwtUtil.validateToken(token)){
+            return ResponseEntity.ok(true)
+        }
+        return ResponseEntity.badRequest().body(false)
     }
 }

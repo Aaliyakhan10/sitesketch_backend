@@ -12,7 +12,7 @@ class EmailService(@Autowired val mailSender: JavaMailSender) {
         val message = SimpleMailMessage()
         message.setTo(to)
         message.setSubject("Verify your email")
-        message.setText("Click here to verify your account: http://localhost:8080/api/verify?token=$token")
+        message.setText("Click here to verify your account: http://localhost:8080/verify?token=$token")
         mailSender.send(message)
     }
 }

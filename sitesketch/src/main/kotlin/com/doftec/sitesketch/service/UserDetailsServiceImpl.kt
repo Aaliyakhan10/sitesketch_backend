@@ -18,9 +18,9 @@ class UserDetailsServiceImpl(
             ?: throw UsernameNotFoundException("User not found")
         println("User found: $user")
         println("Password from DB: ${user.password}")
-//        if (!user.enabled) {
-//            throw DisabledException("Email not verified")
-//        }
+        if (!user.enabled) {
+            throw DisabledException("Email not verified")
+        }
 
         val authorities = user.roles.map {
             SimpleGrantedAuthority("ROLE_$it")
