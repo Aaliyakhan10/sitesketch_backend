@@ -17,7 +17,7 @@ class Aicontroller(private val aiservice: Aiservice,private val databaseService:
         return ResponseEntity.ok(aiservice.callAi(resume))
     }
     @PostMapping("/resume-update")
-    fun Update(@RequestBody resume: Resume): ResponseEntity<String> {
+    fun updateResume(@RequestBody resume: Resume): ResponseEntity<String> {
         val email=databaseService.getCurrentUserEmail()
         if(email?.isNotEmpty() == true ) {
              databaseService.addResume(resume, email)
@@ -25,6 +25,25 @@ class Aicontroller(private val aiservice: Aiservice,private val databaseService:
             return ResponseEntity.ok("Save to database")
         }
         return  ResponseEntity.ok("Error")
+    }
+    @PostMapping("/code-push")
+    fun updateCode(@RequestBody code: String): ResponseEntity<String> {
+        val email=databaseService.getCurrentUserEmail()
+        if(email?.isNotEmpty() == true ) {
+            databaseService.addCode(code,email)
+
+            return ResponseEntity.ok("Save to database")
+        }
+        return  ResponseEntity.badRequest().body("Error")
+    }
+    @GetMapping("/get-code")
+    fun getCode(): ResponseEntity<String>{
+        val email=databaseService.getCurrentUserEmail()
+        if(email?.isNotEmpty() == true ) {
+           val code=  databaseService.getCode(email)
+            return ResponseEntity.ok(code)
+        }
+        return ResponseEntity.badRequest().body("Error")
     }
     @GetMapping("/whoami")
     fun whoAmI(): Map<String, Any> {

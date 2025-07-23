@@ -10,7 +10,7 @@ import javax.crypto.SecretKey
 @Component
 class JwtUtil {
     private val BASE64_SECRET= "5M7pBjGm9fNqzD2YWzAR8ku5H4xVZ1aBg9Xm2rcL3KQoTzNViAyt"
-    private val EXPIRATION_TIME = 1000 * 60 * 60 // 1 hour
+    private val EXPIRATION_TIME = 1000 * 60 * 60 * 24
 
 
     private val key: SecretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(BASE64_SECRET))

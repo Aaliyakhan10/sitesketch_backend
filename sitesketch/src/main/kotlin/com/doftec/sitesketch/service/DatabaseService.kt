@@ -35,6 +35,21 @@ class DatabaseService(private val userRepository: UserRepository, private val pa
 
             return userRepository.save(user as User)
         }
+    fun addCode(code: String, email: String): User {
+        val user =userRepository.findByEmail(email)
+        user?.code=code
+
+        return userRepository.save(user as User)
+    }
+    fun getCode(email: String): String{
+        val user=userRepository.findByEmail(email)
+        try{
+          return  user?.code.toString()
+
+        }catch (e: Exception){
+          return  "${e.message}"
+        }
+    }
         fun getCurrentUserEmail(): String? {
             val authentication = SecurityContextHolder.getContext().authentication
             if (authentication != null && authentication.isAuthenticated) {

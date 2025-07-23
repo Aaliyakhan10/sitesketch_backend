@@ -38,6 +38,7 @@ class UserInfoController(private val userRepository: UserRepository,
     @PostMapping("/login")
     fun login(@RequestBody authRequest: User): ResponseEntity<String> {
         println("Login attempt: ${authRequest.email}")
+
         return  try {
 
             authenticationManager.authenticate(
@@ -49,7 +50,9 @@ class UserInfoController(private val userRepository: UserRepository,
             ResponseEntity.ok(token)
         } catch (e: AuthenticationException) {
             println("Authentication failed: ${e.message}")
-            ResponseEntity.status(401).build()
+             ResponseEntity
+                .status(401)
+                .body("Invalid email or password")
         }
     }
     @GetMapping("/verify")

@@ -17,11 +17,11 @@ class Aiservice(private val restClient: RestClient) {
         val codePrompt = getPrompt(resumeJson)
 
             val requestBody = mapOf(
-            "model" to "deepseek/deepseek-r1-0528-qwen3-8b:free",
+            "model" to "deepseek/deepseek-r1-0528:free",
             "messages" to listOf(
                 mapOf("role" to "user", "content" to codePrompt)
             ),
-            "temperature" to 0.7
+            "temperature" to 0.9
         )
 
         val response = restClient.post()
@@ -30,6 +30,7 @@ class Aiservice(private val restClient: RestClient) {
             .retrieve()
             .toEntity(String::class.java)
             .body ?: ""
+
 
 
         return try {
@@ -42,140 +43,156 @@ class Aiservice(private val restClient: RestClient) {
     }
     fun getPrompt(resumeJson: String): String{
         return """
-You are an expert frontend developer and UI/UX designer.
+You are an expert front-end developer and UI/UX designer.
 
-Your task is to generate a fully functional, production-ready, single-page portfolio website that dynamically renders content from a local `resume.json` file.
+Your task is to generate a **production-ready**, fully responsive **single-page portfolio website** using **only a single HTML file**. This website must dynamically render all content based on data loaded from a local `resume.json` file.
 
-🧾 Technologies:
-• HTML5  
-• Plain CSS (no frameworks)  
-• Vanilla JavaScript  
-• No external JS or CSS files — everything must be in one HTML file  
-• Icons via CDN only (FontAwesome Free, Heroicons, or Iconify)
-• Css shouls be correctly style
+---
 
+### 🔧 Technologies & Constraints:
 
-📁 Data Source:
-All content must be fetched dynamically from `./resume.json`. Do not hardcode any content.
+* HTML5
+* Plain CSS (no frameworks)
+* Vanilla JavaScript
+* **All styles and scripts must be inline** — no external files
+* **Icons allowed via CDN only** (FontAwesome Free, Heroicons, or Iconify)
 
-Schema includes (but not limited to):
+---
 
-```json
-{
-  "personalInformation": {
-    "fullName": "", "email": "", "phoneNumber": "", "location": "", "linkedIn": "", "gitHub": "", "portfolio": "", "website": "", "media": ""
-  },
-  "summary": "",
-  "skills": [{ "title": "", "level": "" }],
-  "experience": [{ "jobTitle": "", "company": "", "location": "", "duration": "", "responsibilities": [""], "toolsUsed": [""], "media": "" }],
-  "education": [{ "degree": "", "university": "", "location": "", "graduationYear": "", "gpa": "" }],
-  "certifications": [{ "title": "", "issuingOrganization": "", "year": "", "credentialId": "", "credentialUrl": "" }],
-  "projects": [{ "title": "", "description": "", "technologiesUsed": [""], "githubLink": "", "liveDemoLink": "", "media": "" }],
-  "achievements": [{ "title": "", "year": "", "extraInformation": "" }],
-  "publications": [{ "title": "", "publisher": "", "publicationDate": "", "url": "" }],
-  "caseStudies": [{ "title": "", "client": "", "description": "", "outcome": "", "media": "" }],
-  "licenses": [{ "title": "", "licenseNumber": "", "issuingOrganization": "", "issueDate": "", "expiryDate": "" }],
-  "languages": [{ "name": "", "proficiency": "" }],
-  "interests": [{ "name": "" }],
-  "references": [{ "name": "", "position": "", "company": "", "email": "", "phone": "" }],
-  "mediaGallery": [{ "fileName": "", "fileType": "", "description": "", "url": "" }]
-}
-🧩 Render Logic:
-Render the following sections only if the data is present:
+### 📄 Data Source & Fallback:
 
-Order:
-Hero → Summary → Skills → Experience → Projects → Education → Certifications → Achievements → Publications → Case Studies → Licenses → Languages → Interests → Media Gallery → References → Contact
-✅ If not rendering the data , the heading must not render 
-    e.g if projects section is empty its title should not be visible at all.
-✅please do not render heading if data is not present or section is empty like i can see a heading as license with no information below it heading will only render if that section is rendering
-✅ Always render "Contact", even if the others are empty.
-✅ All other sections must be hidden if there's no data.
-✅ Still include the JS & HTML structure in the code so that if resume.json updates later, it auto-renders correctly.
+* Primary: Fetch JSON data from `./resume.json`
+* Fallback: Use JSON from `localStorage.getItem("resumeData")` (parsed into `resumeData`)
+* Display a user-friendly error message if no data is available or loading fails
 
+---
 
-🧭 Navigation:
-• Show links for up to 6 sections only (if they have data):
-About, Work Experience, Projects, Skills, Education, Contact
-• It must be user friendly , responsive , clear and beautifully
-• Navigation must be sticky, mobile-friendly, and smooth scrolling.
-• Use a hamburger menu on smaller screens.
-• Section headers must be visible after clicking nav (consider nav offset).
+### 🔍 Rendering Logic:
 
-📬 Contact Form:
-• Fields: Name (required), Email (required), Subject, Message (required)
-• Use mailto: with pre-filled fields
-• Show toast on success (auto-dismiss after 3 sec)
-• Disable send button while sending
+Render the following sections **only if data exists** in `resume.json` or `resumeData`, in this exact order:
 
-🎨 Design Theme:
-• Clean, icy glassmorphism aesthetic
-• Use dark,= and visible for text and light color in background
-• Frosted glass cards with subtle shadows
-• Smooth fade-in and slide-up animations
-• Hover scale/depth effects
-• Cool modern font and consistent typography
-• Responsive layout (desktop, tablet, mobile)
-• Lazy-load media
-• Apply css correctly 
-• Do not forget to fully implement responsiveness 
+1. Hero
+2. Summary
+3. Skills
+4. Experience
+5. Projects
+6. Education
+7. Certifications
+8. Achievements
+9. Publications
+10. Case Studies
+11. Licenses
+12. Languages
+13. Interests
+14. Media Gallery
+15. References
+16. Contact (Always render)
+> Omit both section and heading for any section with no data.
 
+---
 
-✅ Example Rendering Structure:
-Use this structure for each render function inside the .then(data => { ... }) block:
+### 🧭 Navigation:
 
-javascript
-Copy
-Edit
-fetch("./resume.json").then(res => res.json()).then(data => {
-    if (data.summary) renderSummary(data.personalInformation, data.summary);
-    if (data.skills?.length) renderSkills(data.skills);
-    if (data.experience?.length) renderExperience(data.experience);
-    if (data.projects?.length) renderProjects(data.projects);
-    if (data.education?.length) renderEducation(data.education);
-    if (data.certifications?.length) renderCertifications(data.certifications);
-    if (data.languages?.length) renderLanguages(data.languages);
-    if (data.achievements?.length) renderAchievements(data.achievements);
-    if (data.caseStudies?.length) renderCaseStudies(data.caseStudies);
-    if (data.mediaGallery?.length) renderMediaGallery(data.mediaGallery);
-    if (data.references?.length) renderReferences(data.references);
-    if (data.interests?.length) renderInterests(data.interests);
-    renderContact(); // Always
-});
-Each section like renderSummary(...) must create and inject content only if the corresponding data is present. Structure for all sections must still exist in the code (so they appear when updated in JSON).
+* Must be present and support smooth scrolling
+* Display links to **a maximum of 6 sections** if those sections have data:
 
-📦 Performance:
-• Safe DOM access with optional chaining
-• No hardcoded values
-• No undefined/null errors in console
-• Lazy load images and media
-• Minimize layout shift
+  * About, Work Experience, Projects, Skills, Education, Contact
+* Sticky, mobile-friendly, and clear design
+* Hamburger menu for small screens
+* Offset header height for in-page anchor jumps
+*The entire site will be loaded inside an <iframe>.
+❗️Do not write navigation that reloads or navigates the iframe source. All section links must scroll smoothly within the iframe itself.
 
-📝 Deliverable:
-Generate one full HTML file (no external assets), which:
-• Uses only inline CSS + JS
-• Starts with <!DOCTYPE html>
-• Includes all render logic
-• Uses icon CDN (FontAwesome Free, Iconify, or Heroicons only)
-• Fully working and ready to deploy
-• No comments or placeholder content
-• No need for the user to edit any code ever
+---
 
-📁 Summary:
-Return only a complete, working HTML5 code file that:
-• Dynamically loads resume.json
-• Renders only non-empty sections
-• Auto-updates when JSON is updated
-• Contains exactly 6 or fewer nav links
-• Is mobile-first, animated, responsive, glass-themed
-• Css must apply in code 
-• Ready to deploy 
-• Please check your response twice before returning
-• Needs no setup, build step, or modification
+### 📬 Contact Form:
 
-Please generate code that correctly renders all sections dynamically from the JSON file and allows smooth navigation between them.
+* Always rendered
+* Fields: Name (required), Email (required), Subject, Message (required)
+* Uses `mailto:` with prefilled content
+* Shows a toast notification on successful send
+* Disables send button during submission
+* Simple, minimal, and reliable — no third-party services
 
+---
 
-Now return only the code.
+### 🎨 Design Theme:
+
+* **Modern glassmorphism aesthetic**
+* Dark text on bright/light background
+* Frosted glass cards with shadows
+* Smooth fade-in and slide-up animations
+* Hover scale and depth effects
+* Clean, readable typography
+* Fully responsive for desktop, tablet, and mobile
+* Lazy-load media assets
+* Icons where useful — **avoid emoji-only or overuse of icons**
+
+---
+
+### ✅ Example Render Logic (inside `.then(data => {})` block):
+
+```js
+if (data.summary) renderSummary(data.personalInformation, data.summary);
+if (data.skills?.length) renderSkills(data.skills);
+if (data.experience?.length) renderExperience(data.experience);
+if (data.projects?.length) renderProjects(data.projects);
+if (data.education?.length) renderEducation(data.education);
+if (data.certifications?.length) renderCertifications(data.certifications);
+if (data.achievements?.length) renderAchievements(data.achievements);
+if (data.publications?.length) renderPublications(data.publications);
+if (data.caseStudies?.length) renderCaseStudies(data.caseStudies);
+if (data.licenses?.length) renderLicenses(data.licenses);
+if (data.languages?.length) renderLanguages(data.languages);
+if (data.interests?.length) renderInterests(data.interests);
+if (data.mediaGallery?.length) renderMediaGallery(data.mediaGallery);
+if (data.references?.length) renderReferences(data.references);
+renderContact(); // Always render
+```
+please write code carefully so its will not throw error like "Error loading resume data" or "Error loading resume data"
+> All section-rendering functions must be included, even if data is currently missing.
+> Code should be structured so updates to `resume.json` automatically render new sections if populated.
+
+---
+
+### 🧪 Performance & Code Quality:
+
+* Use optional chaining `?.` throughout
+* Parse localStorage data with `JSON.parse()`
+* Avoid accessing nested values without checks
+* Validate fetch status and response format before parsing
+* Lazy-load images and avoid layout shifts
+* Gracefully handle all possible errors
+* No undefined/null console errors
+*The entire site will be loaded inside an <iframe>.
+❗️Do not write navigation that reloads or navigates the iframe source. All section links must scroll smoothly within the iframe itself.
+---
+
+### 📝 Deliverable Requirements:
+
+The output must be a **single HTML file** that:
+
+* Starts with `<!DOCTYPE html>`
+* Contains inline CSS and JS only
+* Renders all sections dynamically from `resume.json`
+* Renders no section or heading for empty data
+* Limits navigation to 6 data-present sections
+* Fully responsive, animated, and styled correctly
+* No hardcoded content or placeholders
+* Requires **no build tools, packages, or setup**
+* Includes a footer: **"made with love by sitesketch"**
+* Ready for immediate deployment and iframe embedding
+* Avoid showing this on code instead hide that field/section 
+undefined - undefined (undefined)
+undefined - undefined (undefined)
+undefined - undefined (undefined)
+undefined - undefined (undefined)
+---
+
+### 📦 Final Instruction:
+
+Return only the final, complete, minified, and production-ready HTML5 code file — nothing else. Make sure all instructions above are followed precisely.
+
 """.trimIndent()
 
     }
