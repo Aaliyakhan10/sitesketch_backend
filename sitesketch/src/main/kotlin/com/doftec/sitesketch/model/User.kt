@@ -19,7 +19,8 @@ data class User(
     val roles: List<String> = listOf("USER"),
     var enabled: Boolean = false,
     var verificationToken: String? = null,
-    var tokenExpiration: LocalDateTime? = null
+    var tokenExpiration: LocalDateTime? = null,
+    var linkUrl: String?=null
 
 
     )

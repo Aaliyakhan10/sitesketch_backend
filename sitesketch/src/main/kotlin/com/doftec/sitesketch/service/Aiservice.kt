@@ -17,7 +17,7 @@ class Aiservice(private val restClient: RestClient) {
         val codePrompt = getPrompt(resumeJson)
 
             val requestBody = mapOf(
-            "model" to "deepseek/deepseek-r1-0528:free",
+            "model" to "deepseek/deepseek-r1-0528-qwen3-8b:free",
             "messages" to listOf(
                 mapOf("role" to "user", "content" to codePrompt)
             ),
