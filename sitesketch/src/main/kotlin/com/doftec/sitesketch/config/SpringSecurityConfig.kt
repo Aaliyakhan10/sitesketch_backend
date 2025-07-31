@@ -36,7 +36,7 @@ class SpringSecurityConfig(
             .cors { }
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/register", "/login","/validate").permitAll()
+                it.requestMatchers("/register", "/login","/validate" , "/check-verification").permitAll()
                 it.requestMatchers("/admin/**").hasRole("ADMIN")
                 it.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                 it.anyRequest().permitAll()

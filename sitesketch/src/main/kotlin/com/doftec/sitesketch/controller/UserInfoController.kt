@@ -3,6 +3,7 @@ package com.doftec.sitesketch.controller
 import com.doftec.sitesketch.Utils.JwtUtil
 import com.doftec.sitesketch.dto.AuthRequest
 import com.doftec.sitesketch.dto.AuthResponse
+import com.doftec.sitesketch.dto.EmailRequest
 import com.doftec.sitesketch.model.User
 import com.doftec.sitesketch.repository.UserRepository
 import com.doftec.sitesketch.service.DatabaseService
@@ -77,5 +78,14 @@ class UserInfoController(private val userRepository: UserRepository,
             return ResponseEntity.ok(true)
         }
         return ResponseEntity.badRequest().body(false)
+    }
+    @PostMapping("/check-verification")
+    fun checkVerification(@RequestBody request: EmailRequest): ResponseEntity<Boolean> {
+        val user = userRepository.findByEmail(request.email)
+        return if (user != null) {
+            ResponseEntity.ok(user.enabled)
+        } else {
+            ResponseEntity.badRequest().body(false)
+        }
     }
 }

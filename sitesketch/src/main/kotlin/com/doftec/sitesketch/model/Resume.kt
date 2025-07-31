@@ -1,6 +1,7 @@
 package com.doftec.sitesketch.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
 data class Resume(
     val personalInformation: PersonalInformation = PersonalInformation(),
     val summary: String = "",

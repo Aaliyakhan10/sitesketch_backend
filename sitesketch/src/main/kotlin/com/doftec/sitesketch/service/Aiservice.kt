@@ -17,11 +17,11 @@ class Aiservice(private val restClient: RestClient) {
         val codePrompt = getPrompt(resumeJson)
 
             val requestBody = mapOf(
-            "model" to "deepseek/deepseek-r1-0528-qwen3-8b:free",
+            "model" to "z-ai/glm-4.5-air:free",
             "messages" to listOf(
                 mapOf("role" to "user", "content" to codePrompt)
             ),
-            "temperature" to 0.9
+            "temperature" to 0.7
         )
 
         val response = restClient.post()
@@ -43,156 +43,188 @@ class Aiservice(private val restClient: RestClient) {
     }
     fun getPrompt(resumeJson: String): String{
         return """
-You are an expert front-end developer and UI/UX designer.
+**Role:** Senior Front-End Developer & UI/UX Specialist  
+**Objective:** Create single-file portfolio with glassmorphism design  
+**Constraints:** Zero dependencies, iframe-safe, WCAG 2.1 AA compliant  
 
-Your task is to generate a **production-ready**, fully responsive **single-page portfolio website** using **only a single HTML file**. This website must dynamically render all content based on data loaded from a local `resume.json` file.
+### 🚀 CORE REQUIREMENTS  
+1. **Single HTML File**  
+   - Inline CSS/JS only (no external resources)  
+   - Max file size: 50KB compressed  
+   - Icon CDNs allowed: FontAwesome/Iconify  
 
----
+2. **Error-Proof Implementation**  
+   - Zero console errors in Chrome/Firefox/Safari  
+   - Graceful degradation for missing JSON data  
+   - `?.` optional chaining for all data access  
+   - Try/catch wrapping for localStorage/JSON operations  
 
-### 🔧 Technologies & Constraints:
+3. **Data Handling**  
+   ```javascript
+   // REQUIRED VALIDATION FUNCTION
+   const hasValidContent = (arr) => Array.isArray(arr) && 
+     arr.some(item => Object.values(item).some(val => 
+       (Array.isArray(val) ? val.join('') : val.toString()
+     ).trim().length > 0)
+   ```  
+   - Priority sources:  
+     1. `resume.json` (fetch)  
+     2. `localStorage.getItem("resumeData")`  
+     3. Fallback: Render minimal UI with error message  
 
-* HTML5
-* Plain CSS (no frameworks)
-* Vanilla JavaScript
-* **All styles and scripts must be inline** — no external files
-* **Icons allowed via CDN only** (FontAwesome Free, Heroicons, or Iconify)
+### 🎨 DESIGN SPECIFICATIONS  
+**Glassmorphism System:**  
+```css
+.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 33, 0.18);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+```  
+**Mandatory Animations:**  
+- Staggered fade-in (section appear sequence)  
+- Hover scale (cards/buttons)  
+- Smooth scroll (anchor navigation)  
 
----
+### ⚙️ TECHNICAL NON-NEGOTIABLES  
+- **Iframe Safety:**  
+  - Anchor navigation only (`#section`)  
+  - No `window.top` access  
+  - Containment: `section { contain: content; }`  
 
-### 📄 Data Source & Fallback:
+- **Performance:**  
+  - Lazy image loading (`loading="lazy"`)  
+  - CSS containment for all sections  
+  - RequestAnimationFrame for DOM updates  
 
-* Primary: Fetch JSON data from `./resume.json`
-* Fallback: Use JSON from `localStorage.getItem("resumeData")` (parsed into `resumeData`)
-* Display a user-friendly error message if no data is available or loading fails
+- **Accessibility:**  
+  - Semantic HTML5 tags  
+  - Keyboard navigable menu  
+  - Reduced motion preference support  
+  - ARIA attributes for dynamic content  
 
----
-
-### 🔍 Rendering Logic:
-
-Render the following sections **only if data exists** in `resume.json` or `resumeData`, in this exact order:
-
-1. Hero
-2. Summary
-3. Skills
-4. Experience
-5. Projects
-6. Education
-7. Certifications
-8. Achievements
-9. Publications
-10. Case Studies
-11. Licenses
-12. Languages
-13. Interests
-14. Media Gallery
-15. References
-16. Contact (Always render)
-> Omit both section and heading for any section with no data.
-
----
-
-### 🧭 Navigation:
-
-* Must be present and support smooth scrolling
-* Display links to **a maximum of 6 sections** if those sections have data:
-
-  * About, Work Experience, Projects, Skills, Education, Contact
-* Sticky, mobile-friendly, and clear design
-* Hamburger menu for small screens
-* Offset header height for in-page anchor jumps
-*The entire site will be loaded inside an <iframe>.
-❗️Do not write navigation that reloads or navigates the iframe source. All section links must scroll smoothly within the iframe itself.
-
----
-
-### 📬 Contact Form:
-
-* Always rendered
-* Fields: Name (required), Email (required), Subject, Message (required)
-* Uses `mailto:` with prefilled content
-* Shows a toast notification on successful send
-* Disables send button during submission
-* Simple, minimal, and reliable — no third-party services
-
----
-
-### 🎨 Design Theme:
-
-* **Modern glassmorphism aesthetic**
-* Dark text on bright/light background
-* Frosted glass cards with shadows
-* Smooth fade-in and slide-up animations
-* Hover scale and depth effects
-* Clean, readable typography
-* Fully responsive for desktop, tablet, and mobile
-* Lazy-load media assets
-* Icons where useful — **avoid emoji-only or overuse of icons**
-
----
-
-### ✅ Example Render Logic (inside `.then(data => {})` block):
-
-```js
-if (data.summary) renderSummary(data.personalInformation, data.summary);
-if (data.skills?.length) renderSkills(data.skills);
-if (data.experience?.length) renderExperience(data.experience);
-if (data.projects?.length) renderProjects(data.projects);
-if (data.education?.length) renderEducation(data.education);
-if (data.certifications?.length) renderCertifications(data.certifications);
-if (data.achievements?.length) renderAchievements(data.achievements);
-if (data.publications?.length) renderPublications(data.publications);
-if (data.caseStudies?.length) renderCaseStudies(data.caseStudies);
-if (data.licenses?.length) renderLicenses(data.licenses);
-if (data.languages?.length) renderLanguages(data.languages);
-if (data.interests?.length) renderInterests(data.interests);
-if (data.mediaGallery?.length) renderMediaGallery(data.mediaGallery);
-if (data.references?.length) renderReferences(data.references);
-renderContact(); // Always render
+### 🔄 RENDER LOGIC  
+**Render only if:**  
+```mermaid
+flowchart LR
+  A[personalInformation] -->|Exists| B[Summary]
+  B --> C{hasValidContent?}
+  C -->|Yes| D[Skills]
+  C -->|No| E[Next Section]
+  D --> F[Experience]
+  F --> G[Projects]
+  G --> H[Education]
+  H -->|Conditional| I[Other Sections]
 ```
-please write code carefully so its will not throw error like "Error loading resume data" or "Error loading resume data"
-> All section-rendering functions must be included, even if data is currently missing.
-> Code should be structured so updates to `resume.json` automatically render new sections if populated.
 
----
+### ✉️ CONTACT FORM  
+**Requirements:**  
+```html
+<form id="contact" onsubmit="return handleSubmit(event)">
+  <!-- Accessibility: aria-label required -->
+  <input type="text" name="name" aria-label="Full Name" required>
+  <button type="submit" aria-busy="false">Send</button>
+</form>
+```  
+**Validation:**  
+- Real-time input validation  
+- `mailto:` with encoded subject/body  
+- Submit button state management  
 
-### 🧪 Performance & Code Quality:
+### 🧪 TESTING PROTOCOLS  
+1. **Data Scenarios:**  
+   - Empty JSON  
+   - Malformed fields  
+   - 500KB+ JSON load  
 
-* Use optional chaining `?.` throughout
-* Parse localStorage data with `JSON.parse()`
-* Avoid accessing nested values without checks
-* Validate fetch status and response format before parsing
-* Lazy-load images and avoid layout shifts
-* Gracefully handle all possible errors
-* No undefined/null console errors
-*The entire site will be loaded inside an <iframe>.
-❗️Do not write navigation that reloads or navigates the iframe source. All section links must scroll smoothly within the iframe itself.
----
+2. **Browser Tests:**  
+   - Mobile (320px) → Desktop (1920px)  
+   - Safari 15+, Chrome 110+, Firefox ESR  
 
-### 📝 Deliverable Requirements:
+3. **Performance Metrics:**  
+   - FCP < 1.5s  
+   - CLS < 0.1  
+   - 60fps animations  
 
-The output must be a **single HTML file** that:
+### ✅ DELIVERABLE OUTPUT  
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    /* CRITICAL CSS FIRST */
+    body { margin: 0; overflow-x: hidden; }
+    /* FULL STYLES HERE */
+  </style>
+</head>
+<body>
+  <header><!-- Sticky nav --></header>
+  
+  <main>
+    <!-- DYNAMIC CONTENT -->
+  </main>
 
-* Starts with `<!DOCTYPE html>`
-* Contains inline CSS and JS only
-* Renders all sections dynamically from `resume.json`
-* Renders no section or heading for empty data
-* Limits navigation to 6 data-present sections
-* Fully responsive, animated, and styled correctly
-* No hardcoded content or placeholders
-* Requires **no build tools, packages, or setup**
-* Includes a footer: **"made with love by sitesketch"**
-* Ready for immediate deployment and iframe embedding
-* Avoid showing this on code instead hide that field/section 
-undefined - undefined (undefined)
-undefined - undefined (undefined)
-undefined - undefined (undefined)
-undefined - undefined (undefined)
----
+  <script>
+    // STRICT MODE REQUIRED
+    "use strict";
+    
+    // DATA LOADER WITH ERROR CONTAINMENT
+    async function loadData() {
+      try {
+        /* ... */
+      } catch (err) {
+        console.error('Data load failure', err);
+        return safeFallback();
+      }
+    }
+    
+    // DOM RENDERER WITH VALIDATION
+    function renderSection(id, contentFn) {
+      const el = document.getElementById(id);
+      if(!el) return;
+      
+      try {
+        el.innerHTML = contentFn();
+      } catch (renderErr) {
+        el.innerHTML = `<p class="error">Content unavailable</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
+```
 
-### 📦 Final Instruction:
+### 🚫 PROHIBITED  
+- External libraries (jQuery, React, etc)  
+- `eval()` or `innerHTML` with user input  
+- `!important` in CSS  
+- Synchronous network requests  
 
-Return only the final, complete, minified, and production-ready HTML5 code file — nothing else. Make sure all instructions above are followed precisely.
+### 💡 PRIORITY ORDER  
+1. Zero runtime errors  
+2. Iframe compatibility  
+3. WCAG 2.1 AA compliance  
+4. Glassmorphism aesthetics  
+5. Performance metrics  
+```
 
+This prompt features:
+- Explicit error prevention strategies
+- Atomic validation requirements
+- Performance budget constraints
+- Critical path prioritization
+- Visual design specs with code samples
+- Machine-readable condition logic
+- Security constraints
+- Test-driven development requirements
+
+The structure minimizes ambiguity while enforcing production-grade standards through concrete technical guardrails.
 """.trimIndent()
 
     }

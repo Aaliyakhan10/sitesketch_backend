@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository
  interface UserRepository: MongoRepository<User, String> {
      fun findByEmail(email: String): User?
      fun findByVerificationToken(token: String): User?
+     fun findByDeployId(deployId: String): User?
+     fun findAllByStatus(status: String): List<User>
 }

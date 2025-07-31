@@ -27,6 +27,9 @@ class DatabaseService(private val userRepository: UserRepository, private val pa
         userRepository.save(user)
         return "User Register Successfully Now Login"
     }
+    fun saveUser(user: User?):User{
+      return userRepository.save<User>(user as User)
+    }
 
 
         fun addResume(resume: Resume,email: String): User {
@@ -49,6 +52,18 @@ class DatabaseService(private val userRepository: UserRepository, private val pa
         }catch (e: Exception){
           return  "${e.message}"
         }
+    }
+    fun getResume(email: String): Resume? {
+        val user=userRepository.findByEmail(email)
+
+            return  user?.content
+
+
+    }
+    fun saveUserInfo(resume: Resume,email: String): User {
+        val user=userRepository.findByEmail(email);
+        user?.content=resume
+        return userRepository.save<User>(user as User)
     }
         fun getCurrentUserEmail(): String? {
             val authentication = SecurityContextHolder.getContext().authentication

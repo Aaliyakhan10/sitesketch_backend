@@ -20,8 +20,12 @@ data class User(
     var enabled: Boolean = false,
     var verificationToken: String? = null,
     var tokenExpiration: LocalDateTime? = null,
-    var linkUrl: String?=null
+    var linkUrl: String?=null,
+    var deployId: String?=null,
+    var siteId: String?=null,
+    var status: String = "pending",
 
+    var url: String?=null
 
     )
 
