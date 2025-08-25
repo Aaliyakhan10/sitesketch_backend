@@ -14,11 +14,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+
 
 @Configuration
 @EnableWebSecurity
 class SpringSecurityConfig(
-    private val userDetailsServiceImpl: UserDetailsServiceImpl,
+    private val userDetailsService: UserDetailsServiceImpl,
     private val jwtFilter: JwtFilter
 ) {
 
@@ -27,8 +29,15 @@ class SpringSecurityConfig(
 
 
     @Bean
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager =
-        authConfig.authenticationManager
+    fun authenticationManager(
+        http: HttpSecurity
+    ): AuthenticationManager {
+        val authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+        authManagerBuilder
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder())
+        return authManagerBuilder.build()
+    }
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -36,11 +45,12 @@ class SpringSecurityConfig(
             .cors { }
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/register", "/login","/validate" , "/check-verification").permitAll()
+                it.requestMatchers("/register", "/login","/validate" , "/check-verification" ,"status").permitAll()
                 it.requestMatchers("/admin/**").hasRole("ADMIN")
                 it.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                 it.anyRequest().permitAll()
             }
+            .userDetailsService(userDetailsService)
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .formLogin { it.disable() }
             .httpBasic { }

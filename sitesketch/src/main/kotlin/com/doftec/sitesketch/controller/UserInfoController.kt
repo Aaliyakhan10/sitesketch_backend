@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -39,6 +40,14 @@ class UserInfoController(private val userRepository: UserRepository,
     @PostMapping("/login")
     fun login(@RequestBody authRequest: User): ResponseEntity<String> {
         println("Login attempt: ${authRequest.email}")
+        val user = userRepository.findByEmail(authRequest.email)
+        if (user != null) {
+            println("DB password hash: ${user.password}")
+            println("Raw password: ${authRequest.password}")
+            println("Password matches? " + BCryptPasswordEncoder().matches(authRequest.password, user.password))
+        } else {
+            println("User not found for email ${authRequest.email}")
+        }
 
         return  try {
 

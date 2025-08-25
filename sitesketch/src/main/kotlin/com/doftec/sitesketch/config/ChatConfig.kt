@@ -11,7 +11,7 @@ import org.springframework.web.client.RestClient
 @Configuration
 class ChatConfig {
 
-    @Value("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")
+    @Value("\${OPEN_ROUTER_API}")
     private lateinit var apiKey: String
 
     @Bean

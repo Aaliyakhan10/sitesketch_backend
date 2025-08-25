@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 data class Resume(
     val personalInformation: PersonalInformation = PersonalInformation(),
-    val summary: String = "",
+
     val skills: List<Skill> = emptyList(),
     val experience: List<Experience> = emptyList(),
     val education: List<Education> = emptyList(),
@@ -29,11 +29,12 @@ data class PersonalInformation(
     val linkedIn: String = "",
     val gitHub: String = "",
     val portfolio: String = "",
-    val website: String = "",
-    val media: String = "" // Profile image or intro video
+    val professionalTitle: String = "",
+    val media: String = "",
+    val summary: String = "",// Profile image or intro video
 )
 
-data class Skill(val title: String = "", val level: String = "")
+data class Skill(val title: String = "")
 
 data class Experience(
     val jobTitle: String = "",
